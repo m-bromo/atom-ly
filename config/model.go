@@ -2,6 +2,7 @@ package config
 
 type Environment struct {
 	Environment string `env:"ENV,default=development"`
+	Salt        string `env:"SALT"`
 	Api         API
 	MongoDB     MongoDB
 }
