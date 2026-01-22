@@ -1,1 +1,5 @@
 *.env
+/app
+/bin/
+*.exe
+*.out
