@@ -17,12 +17,12 @@ type LinkService interface {
 
 type linkService struct {
 	linkRepository repository.LinkRepository
-	hasher         hasher.Hahser
+	hasher         hasher.Hasher
 }
 
 func NewLinkService(
 	linkRepository repository.LinkRepository,
-	hahser hasher.Hahser,
+	hahser hasher.Hasher,
 ) LinkService {
 	return &linkService{
 		linkRepository: linkRepository,
