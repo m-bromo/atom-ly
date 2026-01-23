@@ -4,7 +4,7 @@ type Environment struct {
 	Environment string `env:"ENV,default=development"`
 	Salt        string `env:"SALT"`
 	Api         API
-	MongoDB     MongoDB
+	PostgresDB  PostgresDB
 }
 
 type API struct {
@@ -12,10 +12,10 @@ type API struct {
 	Port string `env:"API_HOST,default=8080"`
 }
 
-type MongoDB struct {
+type PostgresDB struct {
 	Host     string `env:"DB_HOST,default=localhost"`
-	Port     string `env:"DB_PORT,default=27017"`
-	Name     string `env:"DB_NAME,default=mongo"`
+	Port     string `env:"DB_PORT,default=5432"`
+	Name     string `env:"DB_NAME,default=postgres_db"`
 	User     string `env:"DB_USER,default=admin"`
 	Password string `env:"DB_PASSWORD,default=password"`
 }
