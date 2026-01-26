@@ -31,14 +31,14 @@ func NewLinkService(
 }
 
 func (s *linkService) ShortenLink(ctx context.Context, url string) (string, error) {
-	link, err := s.linkRepository.GetByUrl(ctx, url)
+	foundShortCode, err := s.linkRepository.GetByUrl(ctx, url)
 	if err != nil {
 		slog.Error("failed to get link", "error", err.Error())
 		return "", err
 	}
 
-	if link != nil {
-		return link.ShortCode, nil
+	if foundShortCode != "" {
+		return foundShortCode, nil
 	}
 
 	id, err := s.linkRepository.Save(ctx, &entities.Link{
