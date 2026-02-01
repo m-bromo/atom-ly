@@ -7,7 +7,7 @@ import (
 
 	"github.com/m-bromo/atom-ly/internal/domain/entities"
 	"github.com/m-bromo/atom-ly/internal/hasher"
-	"github.com/m-bromo/atom-ly/internal/repository"
+	repository "github.com/m-bromo/atom-ly/internal/repository/link"
 )
 
 type LinkService interface {
