@@ -43,15 +43,15 @@ func (r *postgresLinkRepository) GetByID(ctx context.Context, id int) (string, e
 
 	return url, nil
 }
-func (r *postgresLinkRepository) GetByUrl(ctx context.Context, url string) (string, error) {
-	shortCode, err := r.querier.GetByURl(ctx, url)
+func (r *postgresLinkRepository) GetByUrl(ctx context.Context, url string) (int, error) {
+	id, err := r.querier.GetIDByUrl(ctx, url)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", nil
+			return 0, nil
 		}
 
-		return "", err
+		return 0, err
 	}
 
-	return shortCode, nil
+	return int(id), nil
 }

@@ -10,7 +10,7 @@ import (
 
 type Querier interface {
 	GetByID(ctx context.Context, id int32) (string, error)
-	GetByURl(ctx context.Context, url string) (string, error)
+	GetIDByUrl(ctx context.Context, url string) (int32, error)
 	Save(ctx context.Context, arg SaveParams) (int32, error)
 }
 

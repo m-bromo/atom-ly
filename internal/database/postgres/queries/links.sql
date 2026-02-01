@@ -11,7 +11,7 @@ SELECT links.url
 FROM links
 WHERE id = $1;
 
--- name: GetByURl :one
-SELECT links.url
+-- name: GetIDByUrl :one
+SELECT links.id
 FROM links
 WHERE url = $1;
