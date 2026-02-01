@@ -39,7 +39,7 @@ func (h *LinkHandler) Shorten(c *gin.Context) {
 	})
 }
 
-func (h *LinkHandler) Rediretct(c *gin.Context) {
+func (h *LinkHandler) Redirect(c *gin.Context) {
 	url, err := h.linkService.Redirect(c.Request.Context(), c.Request.URL.RawPath)
 	if err != nil {
 		restErr := resterrors.NewInternalServerError(err.Error())
