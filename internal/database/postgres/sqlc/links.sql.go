@@ -23,16 +23,17 @@ func (q *Queries) GetByID(ctx context.Context, id int32) (string, error) {
 	return url, err
 }
 
-const getByURl = `-- name: GetByURl :one
-SELECT links.url
+const getIDByUrl = `-- name: GetIDByUrl :one
+SELECT links.id
 FROM links
 WHERE url = $1
 `
 
-func (q *Queries) GetByURl(ctx context.Context, url string) (string, error) {
-	row := q.db.QueryRowContext(ctx, getByURl, url)
-	err := row.Scan(&url)
-	return url, err
+func (q *Queries) GetIDByUrl(ctx context.Context, url string) (int32, error) {
+	row := q.db.QueryRowContext(ctx, getIDByUrl, url)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
 }
 
 const save = `-- name: Save :one
