@@ -10,9 +10,10 @@ import (
 	"github.com/m-bromo/atom-ly/internal/database/postgres"
 	"github.com/m-bromo/atom-ly/internal/database/postgres/sqlc"
 	"github.com/m-bromo/atom-ly/internal/hasher"
-	"github.com/m-bromo/atom-ly/internal/repository"
+	repository "github.com/m-bromo/atom-ly/internal/repository/link"
 	"github.com/m-bromo/atom-ly/internal/service"
 	"github.com/m-bromo/atom-ly/internal/web/handler"
+	"github.com/m-bromo/atom-ly/internal/web/middleware"
 	"github.com/m-bromo/atom-ly/internal/web/routes"
 	"github.com/m-bromo/atom-ly/logger"
 )
@@ -33,8 +34,9 @@ func main() {
 	hasher := hasher.NewHashID()
 	linkService := service.NewLinkService(linkRepository, hasher)
 	linkHandler := handler.NewLinkHandler(linkService)
+	errorMidleware := middleware.NewErrorMiddleware()
 
-	routes.SetupRoutes(c, linkHandler)
+	routes.SetupRoutes(c, linkHandler, errorMidleware)
 
 	log.Fatal(c.Run(fmt.Sprintf("%s:%s", config.Env.Api.Host, config.Env.Api.Port)))
 
