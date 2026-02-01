@@ -3,6 +3,7 @@ package config
 type Environment struct {
 	Environment string `env:"ENV,default=development"`
 	Salt        string `env:"SALT"`
+	BaseURL     string `env:"BASE_URL,default=http://localhost:8080"`
 	Api         API
 	PostgresDB  PostgresDB
 }

@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/m-bromo/atom-ly/config"
 	"github.com/m-bromo/atom-ly/internal/service"
 	"github.com/m-bromo/atom-ly/internal/web/models"
 	resterrors "github.com/m-bromo/atom-ly/internal/web/rest_errors"
@@ -34,8 +36,10 @@ func (h *LinkHandler) Shorten(c *gin.Context) {
 		return
 	}
 
+	shortLink := fmt.Sprintf("%s/%s", config.Env.BaseURL, code)
+
 	c.JSON(http.StatusCreated, models.ShortenResponse{
-		ShortLink: code,
+		ShortLink: shortLink,
 	})
 }
 
