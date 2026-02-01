@@ -12,6 +12,12 @@ type LinkHandler struct {
 	linkService service.LinkService
 }
 
+func NewLinkHandler(linkService service.LinkService) *LinkHandler {
+	return &LinkHandler{
+		linkService: linkService,
+	}
+}
+
 func (h *LinkHandler) Shorten(c *gin.Context) {
 	var payload models.ShortenPayload
 	if err := c.Bind(&payload); err != nil {
@@ -30,4 +36,12 @@ func (h *LinkHandler) Shorten(c *gin.Context) {
 	})
 }
 
-func (h *LinkHandler) Rediretct(c *gin.Context)
+func (h *LinkHandler) Rediretct(c *gin.Context) {
+	url, err := h.linkService.Redirect(c.Request.Context(), c.Request.URL.RawPath)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.Redirect(http.StatusPermanentRedirect, url)
+}
