@@ -1,6 +1,7 @@
 package hasher
 
 import (
+	"errors"
 	"log/slog"
 
 	"github.com/m-bromo/atom-ly/config"
@@ -42,7 +43,13 @@ func (h *HashID) Encode(id int) (string, error) {
 }
 
 func (h *HashID) Decode(code string) (int, error) {
+	if code == "" {
+		slog.Error("malformed short code")
+		return 0, errors.New("malformed short code")
+	}
+
 	id, err := h.hash.DecodeWithError(code)
+
 	if err != nil {
 		slog.Error("failed to decode hash", "error", err.Error())
 		return 0, err

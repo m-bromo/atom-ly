@@ -40,7 +40,7 @@ func (h *LinkHandler) Shorten(c *gin.Context) {
 }
 
 func (h *LinkHandler) Redirect(c *gin.Context) {
-	url, err := h.linkService.Redirect(c.Request.Context(), c.Request.URL.RawPath)
+	url, err := h.linkService.Redirect(c.Request.Context(), c.Request.URL.Path[1:])
 	if err != nil {
 		restErr := resterrors.NewInternalServerError(err.Error())
 		c.Error(restErr)
