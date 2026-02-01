@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 
@@ -34,6 +35,8 @@ func main() {
 	linkHandler := handler.NewLinkHandler(linkService)
 
 	routes.SetupRoutes(c, linkHandler)
+
+	log.Fatal(c.Run(fmt.Sprintf("%s:%s", config.Env.Api.Host, config.Env.Api.Port)))
 
 	slog.Info("Starting application")
 }
