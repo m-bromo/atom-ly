@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/m-bromo/atom-ly/internal/domain/entities"
-	"github.com/m-bromo/atom-ly/internal/domain/repository"
 	"github.com/m-bromo/atom-ly/internal/hasher"
+	"github.com/m-bromo/atom-ly/internal/repository"
 )
 
 type LinkService interface {
