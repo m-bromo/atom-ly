@@ -1,0 +1,24 @@
+all: false
+dir: 'internal/mocks'
+filename: '{{.InterfaceName}}.go'
+force-file-write: true
+formatter: goimports
+generate: true
+include-auto-generated: false
+log-level: info
+structname: '{{.Mock}}{{.InterfaceName}}'
+pkgname: 'mocks'
+recursive: false
+require-template-schema-exists: true
+template: testify
+template-schema: '{{.Template}}.schema.json'
+packages:
+  github.com/m-bromo/atom-ly/internal/service:
+    config:
+      all: true
+  github.com/m-bromo/atom-ly/internal/hasher:
+    config:
+      all: true
+  github.com/m-bromo/atom-ly/internal/repository/link:
+    config:
+      all: true
