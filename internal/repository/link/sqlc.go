@@ -38,6 +38,10 @@ func (r *postgresLinkRepository) Save(ctx context.Context, link *entities.Link) 
 func (r *postgresLinkRepository) GetByID(ctx context.Context, id int) (string, error) {
 	url, err := r.querier.GetByID(ctx, int32(id))
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil
+		}
+
 		return "", err
 	}
 

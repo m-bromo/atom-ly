@@ -8,7 +8,6 @@ import (
 	"github.com/m-bromo/atom-ly/config"
 	"github.com/m-bromo/atom-ly/internal/service"
 	"github.com/m-bromo/atom-ly/internal/web/models"
-	resterrors "github.com/m-bromo/atom-ly/internal/web/rest_errors"
 )
 
 type LinkHandler struct {
@@ -24,15 +23,13 @@ func NewLinkHandler(linkService service.LinkService) *LinkHandler {
 func (h *LinkHandler) Shorten(c *gin.Context) {
 	var payload models.ShortenPayload
 	if err := c.Bind(&payload); err != nil {
-		restErr := resterrors.NewBadRequestError(err.Error())
-		c.Error(restErr)
+		c.Error(err)
 		return
 	}
 
 	code, err := h.linkService.ShortenLink(c.Request.Context(), payload.Url)
 	if err != nil {
-		restErr := resterrors.NewInternalServerError(err.Error())
-		c.Error(restErr)
+		c.Error(err)
 		return
 	}
 
@@ -46,8 +43,7 @@ func (h *LinkHandler) Shorten(c *gin.Context) {
 func (h *LinkHandler) Redirect(c *gin.Context) {
 	url, err := h.linkService.Redirect(c.Request.Context(), c.Request.URL.Path[1:])
 	if err != nil {
-		restErr := resterrors.NewInternalServerError(err.Error())
-		c.Error(restErr)
+		c.Error(err)
 		return
 	}
 

@@ -2,12 +2,17 @@ package service
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
 	"github.com/m-bromo/atom-ly/internal/domain/entities"
 	"github.com/m-bromo/atom-ly/internal/hasher"
 	repository "github.com/m-bromo/atom-ly/internal/repository/link"
+)
+
+var (
+	ErrUrlNotFound = errors.New("url not found")
 )
 
 type LinkService interface {
@@ -38,6 +43,7 @@ func (s *linkService) ShortenLink(ctx context.Context, url string) (string, erro
 	}
 
 	if foundID != 0 {
+		slog.Warn("url not found")
 		code, err := s.hasher.Encode(foundID)
 		if err != nil {
 			return "", err
@@ -75,6 +81,11 @@ func (s *linkService) Redirect(ctx context.Context, shortCode string) (string, e
 	if err != nil {
 		slog.Error("failed to get url", "error", err.Error())
 		return "", err
+	}
+
+	if url == "" {
+		slog.Warn("Url not found")
+		return url, ErrUrlNotFound
 	}
 
 	return url, nil
