@@ -11,6 +11,10 @@ import (
 const base62Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 const MinLength = 7
 
+var (
+	ErrInvalidCode = errors.New("the inserted code is invalid")
+)
+
 type Hasher interface {
 	Encode(id int) (string, error)
 	Decode(code string) (int, error)
@@ -45,14 +49,19 @@ func (h *HashID) Encode(id int) (string, error) {
 func (h *HashID) Decode(code string) (int, error) {
 	if code == "" {
 		slog.Error("malformed short code")
-		return 0, errors.New("malformed short code")
+		return 0, ErrInvalidCode
 	}
 
 	id, err := h.hash.DecodeWithError(code)
 
 	if err != nil {
 		slog.Error("failed to decode hash", "error", err.Error())
-		return 0, err
+		return 0, ErrInvalidCode
+	}
+
+	if len(id) == 0 {
+		slog.Warn("invalid code")
+		return 0, ErrInvalidCode
 	}
 
 	return id[0], nil

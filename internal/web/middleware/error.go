@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
+	"github.com/m-bromo/atom-ly/internal/hasher"
 	"github.com/m-bromo/atom-ly/internal/service"
 	resterrors "github.com/m-bromo/atom-ly/internal/web/rest_errors"
 )
@@ -28,6 +29,11 @@ func (m *errorMiddleware) HandleErrors(c *gin.Context) {
 		switch {
 		case errors.Is(err, service.ErrUrlNotFound):
 			restErr := resterrors.NewNotFoundError("url not found")
+			restErr.Path = c.Request.URL.Path
+			c.JSON(restErr.Code, restErr)
+
+		case errors.Is(err, hasher.ErrInvalidCode):
+			restErr := resterrors.NewBadRequestError("the inserted code is invalid")
 			restErr.Path = c.Request.URL.Path
 			c.JSON(restErr.Code, restErr)
 
