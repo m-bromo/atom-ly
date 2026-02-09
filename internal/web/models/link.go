@@ -1,7 +1,7 @@
 package models
 
 type ShortenPayload struct {
-	Url string `json:"url"`
+	Url string `json:"url" validate:"url"`
 }
 
 type ShortenResponse struct {

@@ -27,11 +27,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	c := gin.New()
+	c := gin.Default()
 
 	querier := sqlc.New(db)
-	linkRepository := repository.NewPostgresLinkRepository(querier)
 	hasher := hasher.NewHashID()
+	linkRepository := repository.NewPostgresLinkRepository(querier)
 	linkService := service.NewLinkService(linkRepository, hasher)
 	linkHandler := handler.NewLinkHandler(linkService)
 	errorMidleware := middleware.NewErrorMiddleware()
