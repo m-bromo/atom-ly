@@ -22,7 +22,7 @@ func NewLinkHandler(linkService service.LinkService) *LinkHandler {
 
 func (h *LinkHandler) Shorten(c *gin.Context) {
 	var payload models.ShortenPayload
-	if err := c.Bind(&payload); err != nil {
+	if err := c.BindJSON(&payload); err != nil {
 		c.Error(err)
 		return
 	}
