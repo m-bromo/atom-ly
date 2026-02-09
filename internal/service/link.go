@@ -11,10 +11,6 @@ import (
 	repository "github.com/m-bromo/atom-ly/internal/repository/link"
 )
 
-var (
-	ErrUrlNotFound = errors.New("url not found")
-)
-
 type LinkService interface {
 	ShortenLink(ctx context.Context, url string) (string, error)
 	Redirect(ctx context.Context, shortLink string) (string, error)
@@ -37,12 +33,12 @@ func NewLinkService(
 
 func (s *linkService) ShortenLink(ctx context.Context, url string) (string, error) {
 	foundID, err := s.linkRepository.GetByUrl(ctx, url)
-	if err != nil {
+	if err != nil && !errors.Is(err, repository.ErrLinkNotFound) {
 		slog.Error("failed to get link", "error", err.Error())
 		return "", err
 	}
 
-	if foundID != 0 {
+	if errors.Is(err, repository.ErrLinkNotFound) {
 		slog.Warn("url not found")
 		code, err := s.hasher.Encode(foundID)
 		if err != nil {
@@ -78,14 +74,14 @@ func (s *linkService) Redirect(ctx context.Context, shortCode string) (string, e
 	}
 
 	url, err := s.linkRepository.GetByID(ctx, id)
-	if err != nil {
+	if err != nil && !errors.Is(err, repository.ErrLinkNotFound) {
 		slog.Error("failed to get url", "error", err.Error())
 		return "", err
 	}
 
-	if url == "" {
+	if errors.Is(err, repository.ErrLinkNotFound) {
 		slog.Warn("Url not found")
-		return url, ErrUrlNotFound
+		return url, err
 	}
 
 	return url, nil

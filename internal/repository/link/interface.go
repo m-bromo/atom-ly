@@ -2,8 +2,13 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/m-bromo/atom-ly/internal/domain/entities"
+)
+
+var (
+	ErrLinkNotFound = errors.New("link not found in database")
 )
 
 type LinkRepository interface {

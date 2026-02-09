@@ -39,7 +39,7 @@ func (r *postgresLinkRepository) GetByID(ctx context.Context, id int) (string, e
 	url, err := r.querier.GetByID(ctx, int32(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", nil
+			return "", ErrLinkNotFound
 		}
 
 		return "", err
@@ -51,7 +51,7 @@ func (r *postgresLinkRepository) GetByUrl(ctx context.Context, url string) (int,
 	id, err := r.querier.GetIDByUrl(ctx, url)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, nil
+			return 0, ErrLinkNotFound
 		}
 
 		return 0, err

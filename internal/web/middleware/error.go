@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/m-bromo/atom-ly/internal/hasher"
-	"github.com/m-bromo/atom-ly/internal/service"
+	repository "github.com/m-bromo/atom-ly/internal/repository/link"
 	resterrors "github.com/m-bromo/atom-ly/internal/web/rest_errors"
 )
 
@@ -27,7 +27,7 @@ func (m *errorMiddleware) HandleErrors(c *gin.Context) {
 		err := c.Errors.Last().Err
 
 		switch {
-		case errors.Is(err, service.ErrUrlNotFound):
+		case errors.Is(err, repository.ErrLinkNotFound):
 			restErr := resterrors.NewNotFoundError("url not found")
 			restErr.Path = c.Request.URL.Path
 			c.JSON(restErr.Code, restErr)
