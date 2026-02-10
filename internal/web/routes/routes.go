@@ -7,6 +7,7 @@ import (
 )
 
 func SetupRoutes(c *gin.Engine, h *handler.LinkHandler, m middleware.ErrorMiddleware) {
-	c.POST("/shorten", h.Shorten, m.HandleErrors)
-	c.GET("/:code", h.Redirect, m.HandleErrors)
+	c.Use(m.HandleErrors)
+	c.POST("/shorten", h.Shorten)
+	c.GET("/:code", h.Redirect)
 }
