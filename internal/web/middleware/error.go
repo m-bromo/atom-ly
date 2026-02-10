@@ -25,6 +25,7 @@ func (m *errorMiddleware) HandleErrors(c *gin.Context) {
 	if len(c.Errors) > 0 {
 		err := c.Errors.Last().Err
 		restErr := m.errorHandler.HandleError(err)
+		restErr.Path = c.Request.URL.RawPath
 		c.JSON(restErr.Code, restErr)
 	}
 }

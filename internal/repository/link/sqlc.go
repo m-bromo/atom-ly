@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/m-bromo/atom-ly/internal/database/postgres/sqlc"
 	"github.com/m-bromo/atom-ly/internal/domain/entities"
@@ -29,7 +30,7 @@ func (r *postgresLinkRepository) Save(ctx context.Context, link *entities.Link) 
 	})
 
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to save link: %w", err)
 	}
 
 	return int(id), nil
@@ -42,7 +43,7 @@ func (r *postgresLinkRepository) GetByID(ctx context.Context, id int) (string, e
 			return "", ErrLinkNotFound
 		}
 
-		return "", err
+		return "", fmt.Errorf("failed to get link by id: %w", err)
 	}
 
 	return url, nil
@@ -54,7 +55,7 @@ func (r *postgresLinkRepository) GetByUrl(ctx context.Context, url string) (int,
 			return 0, ErrLinkNotFound
 		}
 
-		return 0, err
+		return 0, fmt.Errorf("failed to get link by url: %w", err)
 	}
 
 	return int(id), nil

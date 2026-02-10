@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/m-bromo/atom-ly/internal/domain/entities"
@@ -33,13 +34,13 @@ func NewLinkService(
 func (s *linkService) ShortenLink(ctx context.Context, url string) (string, error) {
 	foundID, err := s.linkRepository.GetByUrl(ctx, url)
 	if err != nil && !errors.Is(err, repository.ErrLinkNotFound) {
-		return "", err
+		return "", fmt.Errorf("failed to shorten link: %w", err)
 	}
 
-	if errors.Is(err, repository.ErrLinkNotFound) {
+	if !errors.Is(err, repository.ErrLinkNotFound) {
 		code, err := s.hasher.Encode(foundID)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("failed to shorten link: %w", err)
 		}
 
 		return code, nil
@@ -50,12 +51,12 @@ func (s *linkService) ShortenLink(ctx context.Context, url string) (string, erro
 		CreatedAt: time.Now(),
 	})
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to shorten link: %w", err)
 	}
 
 	shortCode, err := s.hasher.Encode(id)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to shorten link: %w", err)
 	}
 
 	return shortCode, nil
@@ -64,16 +65,16 @@ func (s *linkService) ShortenLink(ctx context.Context, url string) (string, erro
 func (s *linkService) Redirect(ctx context.Context, shortCode string) (string, error) {
 	id, err := s.hasher.Decode(shortCode)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to redirect link: %w", err)
 	}
 
 	url, err := s.linkRepository.GetByID(ctx, id)
 	if err != nil && !errors.Is(err, repository.ErrLinkNotFound) {
-		return "", err
+		return "", fmt.Errorf("failed to redirect link: %w", err)
 	}
 
 	if errors.Is(err, repository.ErrLinkNotFound) {
-		return url, err
+		return url, fmt.Errorf("failed to redirect link: %w", err)
 	}
 
 	return url, nil

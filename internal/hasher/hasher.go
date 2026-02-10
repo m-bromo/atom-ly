@@ -2,7 +2,7 @@ package hasher
 
 import (
 	"errors"
-	"log/slog"
+	"fmt"
 
 	"github.com/m-bromo/atom-ly/config"
 	"github.com/speps/go-hashids/v2"
@@ -22,7 +22,6 @@ type Hasher interface {
 
 type HashID struct {
 	hash *hashids.HashID
-	cdg  *config.Config
 }
 
 func NewHashID(cfg *config.Config) *HashID {
@@ -40,8 +39,7 @@ func NewHashID(cfg *config.Config) *HashID {
 func (h *HashID) Encode(id int) (string, error) {
 	code, err := h.hash.Encode([]int{id})
 	if err != nil {
-		slog.Error("failed to encode id", "error", err.Error())
-		return "", err
+		return "", fmt.Errorf("failed to encode id: %w", err)
 	}
 
 	return code, nil
@@ -49,19 +47,16 @@ func (h *HashID) Encode(id int) (string, error) {
 
 func (h *HashID) Decode(code string) (int, error) {
 	if code == "" {
-		slog.Error("malformed short code")
 		return 0, ErrInvalidCode
 	}
 
 	id, err := h.hash.DecodeWithError(code)
 
 	if err != nil {
-		slog.Error("failed to decode hash", "error", err.Error())
 		return 0, ErrInvalidCode
 	}
 
 	if len(id) == 0 {
-		slog.Warn("invalid code")
 		return 0, ErrInvalidCode
 	}
 
