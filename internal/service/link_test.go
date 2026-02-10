@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/m-bromo/atom-ly/internal/mocks"
+	repository "github.com/m-bromo/atom-ly/internal/repository/link"
+	"github.com/m-bromo/atom-ly/pkg/hasher"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -17,7 +19,7 @@ func Test_ShortenLink(t *testing.T) {
 	tests := []struct {
 		name      string
 		args      args
-		setupMock func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher)
+		setupMock func(repo *mocks.MockLinkRepository, h *mocks.MockHasher)
 		want      string
 		wantErr   bool
 	}{
@@ -26,10 +28,10 @@ func Test_ShortenLink(t *testing.T) {
 			args: args{
 				url: "http://example.com",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
-				repo.EXPECT().GetByUrl(mock.Anything, "http://example.com").Return(0, nil)
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
+				repo.EXPECT().GetByUrl(mock.Anything, mock.Anything).Return(0, repository.ErrLinkNotFound)
 				repo.EXPECT().Save(mock.Anything, mock.Anything).Return(1, nil)
-				hasher.EXPECT().Encode(1).Return("abcde", nil)
+				h.EXPECT().Encode(1).Return("abcde", nil)
 			},
 			want:    "abcde",
 			wantErr: false,
@@ -39,9 +41,9 @@ func Test_ShortenLink(t *testing.T) {
 			args: args{
 				url: "http://example.com",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
 				repo.EXPECT().GetByUrl(mock.Anything, "http://example.com").Return(1, nil)
-				hasher.EXPECT().Encode(1).Return("abcde", nil)
+				h.EXPECT().Encode(1).Return("abcde", nil)
 			},
 			want:    "abcde",
 			wantErr: false,
@@ -51,9 +53,9 @@ func Test_ShortenLink(t *testing.T) {
 			args: args{
 				url: "http://example.com",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
 				repo.EXPECT().GetByUrl(mock.Anything, mock.Anything).Return(1, nil)
-				hasher.EXPECT().Encode(1).Return("", errors.New("hasher error"))
+				h.EXPECT().Encode(1).Return("", errors.New("hasher error"))
 			},
 			want:    "",
 			wantErr: true,
@@ -63,10 +65,10 @@ func Test_ShortenLink(t *testing.T) {
 			args: args{
 				url: "http://example.com",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
-				repo.EXPECT().GetByUrl(mock.Anything, mock.Anything).Return(0, nil)
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
+				repo.EXPECT().GetByUrl(mock.Anything, mock.Anything).Return(0, repository.ErrLinkNotFound)
 				repo.EXPECT().Save(mock.Anything, mock.Anything).Return(1, nil)
-				hasher.EXPECT().Encode(1).Return("", errors.New("hasher error"))
+				h.EXPECT().Encode(1).Return("", hasher.ErrInvalidCode)
 			},
 			want:    "",
 			wantErr: true,
@@ -76,7 +78,7 @@ func Test_ShortenLink(t *testing.T) {
 			args: args{
 				url: "http://example.com",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
 				repo.EXPECT().GetByUrl(mock.Anything, "http://example.com").Return(0, errors.New("db error"))
 			},
 			want:    "",
@@ -87,8 +89,8 @@ func Test_ShortenLink(t *testing.T) {
 			args: args{
 				url: "http://example.com",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
-				repo.EXPECT().GetByUrl(mock.Anything, mock.Anything).Return(0, nil)
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
+				repo.EXPECT().GetByUrl(mock.Anything, mock.Anything).Return(0, repository.ErrLinkNotFound)
 				repo.EXPECT().Save(mock.Anything, mock.Anything).Return(0, errors.New("db error"))
 			},
 			want:    "",
@@ -126,7 +128,7 @@ func Test_Redirect(t *testing.T) {
 	tests := []struct {
 		name      string
 		args      args
-		setupMock func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher)
+		setupMock func(repo *mocks.MockLinkRepository, h *mocks.MockHasher)
 		want      string
 		wantErr   bool
 	}{
@@ -135,8 +137,8 @@ func Test_Redirect(t *testing.T) {
 			args: args{
 				shortCode: "abcd123",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
-				hasher.EXPECT().Decode("abcd123").Return(1, nil)
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
+				h.EXPECT().Decode("abcd123").Return(1, nil)
 				repo.EXPECT().GetByID(context.Background(), 1).Return("abcd123", nil)
 			},
 			want:    "abcd123",
@@ -147,8 +149,8 @@ func Test_Redirect(t *testing.T) {
 			args: args{
 				shortCode: "abcd123",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
-				hasher.EXPECT().Decode("abcd123").Return(1, nil)
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
+				h.EXPECT().Decode("abcd123").Return(1, nil)
 				repo.EXPECT().GetByID(context.Background(), 1).Return("", errors.New("db error"))
 			},
 			want:    "",
@@ -159,8 +161,8 @@ func Test_Redirect(t *testing.T) {
 			args: args{
 				shortCode: "abcd123",
 			},
-			setupMock: func(repo *mocks.MockLinkRepository, hasher *mocks.MockHasher) {
-				hasher.EXPECT().Decode("abcd123").Return(0, errors.New("hasher error"))
+			setupMock: func(repo *mocks.MockLinkRepository, h *mocks.MockHasher) {
+				h.EXPECT().Decode("abcd123").Return(0, errors.New("hasher error"))
 			},
 			want:    "",
 			wantErr: true,

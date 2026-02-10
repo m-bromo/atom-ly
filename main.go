@@ -9,13 +9,13 @@ import (
 	"github.com/m-bromo/atom-ly/config"
 	"github.com/m-bromo/atom-ly/internal/database/postgres"
 	"github.com/m-bromo/atom-ly/internal/database/postgres/sqlc"
-	"github.com/m-bromo/atom-ly/internal/hasher"
 	repository "github.com/m-bromo/atom-ly/internal/repository/link"
 	"github.com/m-bromo/atom-ly/internal/service"
 	"github.com/m-bromo/atom-ly/internal/web/handler"
 	"github.com/m-bromo/atom-ly/internal/web/middleware"
 	resterrors "github.com/m-bromo/atom-ly/internal/web/rest_errors"
 	"github.com/m-bromo/atom-ly/internal/web/routes"
+	"github.com/m-bromo/atom-ly/pkg/hasher"
 	"github.com/m-bromo/atom-ly/pkg/logger"
 )
 

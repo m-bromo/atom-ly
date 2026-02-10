@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/m-bromo/atom-ly/internal/hasher"
 	repository "github.com/m-bromo/atom-ly/internal/repository/link"
+	"github.com/m-bromo/atom-ly/pkg/hasher"
 	"github.com/m-bromo/atom-ly/pkg/logger"
 )
 

@@ -16,7 +16,7 @@ packages:
   github.com/m-bromo/atom-ly/internal/service:
     config:
       all: true
-  github.com/m-bromo/atom-ly/internal/hasher:
+  github.com/m-bromo/atom-ly/pkg/hasher:
     config:
       all: true
   github.com/m-bromo/atom-ly/internal/repository/link:
