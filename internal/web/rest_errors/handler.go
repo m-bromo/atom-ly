@@ -25,22 +25,34 @@ func (h *ErrorHandler) HandleError(err error) *RestErr {
 	switch {
 	case errors.As(err, &validationErr):
 		restErr := handleValidationErrors(err)
-		h.log.Log.Warn("there has been a validation error", "errors:", err.Error())
+		h.log.Log.Warn(
+			"validation failed for request",
+			"error", err.Error(),
+		)
 		return restErr
 
 	case errors.Is(err, repository.ErrLinkNotFound):
 		restErr := NewNotFoundError("url not found")
-		h.log.Log.Warn("the resource was not found", "error", err.Error())
+		h.log.Log.Warn(
+			"requested resource not found",
+			"error", err.Error(),
+		)
 		return restErr
 
 	case errors.Is(err, hasher.ErrInvalidCode):
 		restErr := NewBadRequestError("the inserted code is invalid")
-		h.log.Log.Warn("the code inserted wa s not valid", "error", err.Error())
+		h.log.Log.Warn(
+			"invalid code provided by client",
+			"error", err.Error(),
+		)
 		return restErr
 
 	default:
-		restErr := NewInternalServerError("There was an unexpecter internal server error")
-		h.log.Log.Error("there was an unexpected internal error", "error", err.Error())
+		restErr := NewInternalServerError("there was an unexpected internal server error")
+		h.log.Log.Error(
+			"unexpected internal server error",
+			"error", err.Error(),
+		)
 		return restErr
 	}
 }
