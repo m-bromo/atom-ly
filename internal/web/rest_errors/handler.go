@@ -58,22 +58,19 @@ func (h *ErrorHandler) HandleError(err error) *RestErr {
 }
 
 func handleValidationErrors(err error) *RestErr {
+	var validationErrs validator.ValidationErrors
 	var causes []Causes
 
-	if err != nil {
-		if v, ok := err.(validator.ValidationErrors); ok {
-			for _, fieldErr := range v {
-				cause := Causes{
-					Field:   fieldErr.ActualTag(),
-					Message: fieldErr.Error(),
-				}
-
-				causes = append(causes, cause)
-			}
-
-			return NewBadRequestValidationError("fields are invalid", causes)
-		}
+	if !errors.As(err, &validationErrs) {
+		return NewBadRequestError("invalid request payload")
 	}
 
-	return NewBadRequestError("some unexpected error has occurred")
+	for _, fieldErr := range validationErrs {
+		causes = append(causes, Causes{
+			Field:   fieldErr.Field(),
+			Message: fieldErr.Error(),
+		})
+	}
+
+	return NewBadRequestValidationError("one or more fields are invalid", causes)
 }
