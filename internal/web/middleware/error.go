@@ -10,10 +10,13 @@ type ErrorMiddleware interface {
 }
 
 type errorMiddleware struct {
+	errorHandler *resterrors.ErrorHandler
 }
 
-func NewErrorMiddleware() ErrorMiddleware {
-	return &errorMiddleware{}
+func NewErrorMiddleware(errorHandler *resterrors.ErrorHandler) ErrorMiddleware {
+	return &errorMiddleware{
+		errorHandler: errorHandler,
+	}
 }
 
 func (m *errorMiddleware) HandleErrors(c *gin.Context) {
@@ -21,7 +24,7 @@ func (m *errorMiddleware) HandleErrors(c *gin.Context) {
 
 	if len(c.Errors) > 0 {
 		err := c.Errors.Last().Err
-		restErr := resterrors.HandleError(err)
+		restErr := m.errorHandler.HandleError(err)
 		c.JSON(restErr.Code, restErr)
 	}
 }

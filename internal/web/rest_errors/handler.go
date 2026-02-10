@@ -6,26 +6,41 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/m-bromo/atom-ly/internal/hasher"
 	repository "github.com/m-bromo/atom-ly/internal/repository/link"
+	"github.com/m-bromo/atom-ly/pkg/logger"
 )
 
-func HandleError(err error) *RestErr {
+type ErrorHandler struct {
+	log *logger.Logger
+}
+
+func NewErrorHandler(log *logger.Logger) *ErrorHandler {
+	return &ErrorHandler{
+		log: log,
+	}
+}
+
+func (h *ErrorHandler) HandleError(err error) *RestErr {
 	var validationErr validator.ValidationErrors
 
 	switch {
 	case errors.As(err, &validationErr):
 		restErr := handleValidationErrors(err)
+		h.log.Log.Warn("there has been a validation error", "errors:", err.Error())
 		return restErr
 
 	case errors.Is(err, repository.ErrLinkNotFound):
 		restErr := NewNotFoundError("url not found")
+		h.log.Log.Warn("the resource was not found", "error", err.Error())
 		return restErr
 
 	case errors.Is(err, hasher.ErrInvalidCode):
 		restErr := NewBadRequestError("the inserted code is invalid")
+		h.log.Log.Warn("the code inserted wa s not valid", "error", err.Error())
 		return restErr
 
 	default:
 		restErr := NewInternalServerError("There was an unexpecter internal server error")
+		h.log.Log.Error("there was an unexpected internal error", "error", err.Error())
 		return restErr
 	}
 }

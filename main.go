@@ -14,7 +14,9 @@ import (
 	"github.com/m-bromo/atom-ly/internal/service"
 	"github.com/m-bromo/atom-ly/internal/web/handler"
 	"github.com/m-bromo/atom-ly/internal/web/middleware"
+	resterrors "github.com/m-bromo/atom-ly/internal/web/rest_errors"
 	"github.com/m-bromo/atom-ly/internal/web/routes"
+	"github.com/m-bromo/atom-ly/pkg/logger"
 )
 
 func main() {
@@ -32,10 +34,12 @@ func main() {
 
 	querier := sqlc.New(db)
 	hasher := hasher.NewHashID(config)
+	logger := logger.NewLogger(config)
 	linkRepository := repository.NewPostgresLinkRepository(querier)
 	linkService := service.NewLinkService(linkRepository, hasher)
 	linkHandler := handler.NewLinkHandler(linkService, config)
-	errorMidleware := middleware.NewErrorMiddleware()
+	errHandler := resterrors.NewErrorHandler(logger)
+	errorMidleware := middleware.NewErrorMiddleware(errHandler)
 
 	routes.SetupRoutes(c, linkHandler, errorMidleware)
 
