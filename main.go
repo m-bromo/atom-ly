@@ -15,14 +15,15 @@ import (
 	"github.com/m-bromo/atom-ly/internal/web/handler"
 	"github.com/m-bromo/atom-ly/internal/web/middleware"
 	"github.com/m-bromo/atom-ly/internal/web/routes"
-	"github.com/m-bromo/atom-ly/logger"
 )
 
 func main() {
-	config.SetupEnvironment()
-	logger.SetupLog(config.Env.Environment)
+	config, err := config.NewConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	db, err := postgres.NewPostgresConnection()
+	db, err := postgres.NewPostgresConnection(config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,10 +31,10 @@ func main() {
 	c := gin.Default()
 
 	querier := sqlc.New(db)
-	hasher := hasher.NewHashID()
+	hasher := hasher.NewHashID(config)
 	linkRepository := repository.NewPostgresLinkRepository(querier)
 	linkService := service.NewLinkService(linkRepository, hasher)
-	linkHandler := handler.NewLinkHandler(linkService)
+	linkHandler := handler.NewLinkHandler(linkService, config)
 	errorMidleware := middleware.NewErrorMiddleware()
 
 	routes.SetupRoutes(c, linkHandler, errorMidleware)

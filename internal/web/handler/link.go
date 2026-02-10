@@ -12,11 +12,13 @@ import (
 
 type LinkHandler struct {
 	linkService service.LinkService
+	cfg         *config.Config
 }
 
-func NewLinkHandler(linkService service.LinkService) *LinkHandler {
+func NewLinkHandler(linkService service.LinkService, cfg *config.Config) *LinkHandler {
 	return &LinkHandler{
 		linkService: linkService,
+		cfg:         cfg,
 	}
 }
 
@@ -33,7 +35,7 @@ func (h *LinkHandler) Shorten(c *gin.Context) {
 		return
 	}
 
-	shortLink := fmt.Sprintf("%s/%s", config.Env.BaseURL, code)
+	shortLink := fmt.Sprintf("%s/%s", h.cfg.Env.BaseURL, code)
 
 	c.JSON(http.StatusCreated, models.ShortenResponse{
 		ShortLink: shortLink,

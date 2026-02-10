@@ -22,11 +22,12 @@ type Hasher interface {
 
 type HashID struct {
 	hash *hashids.HashID
+	cdg  *config.Config
 }
 
-func NewHashID() *HashID {
+func NewHashID(cfg *config.Config) *HashID {
 	data := hashids.NewData()
-	data.Salt = config.Env.Salt
+	data.Salt = cfg.Env.Salt
 	data.MinLength = MinLength
 	data.Alphabet = base62Alphabet
 	h, _ := hashids.NewWithData(data)

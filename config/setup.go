@@ -1,25 +1,25 @@
 package config
 
 import (
-	"log"
-	"log/slog"
-
 	"github.com/Netflix/go-env"
 	"github.com/joho/godotenv"
 )
 
-var Env Environment
+type Config struct {
+	Env Environment
+}
 
-func SetupEnvironment() {
+func NewConfig() (*Config, error) {
+	var config Config
+
 	if err := godotenv.Load(".env"); err != nil {
-		slog.Info("Loaded .env file")
-		log.Fatal(err)
+		return nil, err
 	}
 
-	_, err := env.UnmarshalFromEnviron(&Env)
+	_, err := env.UnmarshalFromEnviron(&config.Env)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	slog.Info("Environment loaded", "env", Env)
+	return &config, nil
 }

@@ -9,13 +9,13 @@ import (
 	"github.com/m-bromo/atom-ly/config"
 )
 
-func NewPostgresConnection() (*sql.DB, error) {
+func NewPostgresConnection(cfg *config.Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=disable",
-		config.Env.PostgresDB.Name,
-		config.Env.PostgresDB.User,
-		config.Env.PostgresDB.Password,
-		config.Env.PostgresDB.Host,
-		config.Env.PostgresDB.Port,
+		cfg.Env.PostgresDB.Name,
+		cfg.Env.PostgresDB.User,
+		cfg.Env.PostgresDB.Password,
+		cfg.Env.PostgresDB.Host,
+		cfg.Env.PostgresDB.Port,
 	)
 
 	conn, err := sql.Open("postgres", dsn)
