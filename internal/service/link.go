@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"time"
 
 	"github.com/m-bromo/atom-ly/internal/domain/entities"
@@ -34,12 +33,10 @@ func NewLinkService(
 func (s *linkService) ShortenLink(ctx context.Context, url string) (string, error) {
 	foundID, err := s.linkRepository.GetByUrl(ctx, url)
 	if err != nil && !errors.Is(err, repository.ErrLinkNotFound) {
-		slog.Error("failed to get link", "error", err.Error())
 		return "", err
 	}
 
 	if errors.Is(err, repository.ErrLinkNotFound) {
-		slog.Warn("url not found")
 		code, err := s.hasher.Encode(foundID)
 		if err != nil {
 			return "", err
@@ -53,13 +50,11 @@ func (s *linkService) ShortenLink(ctx context.Context, url string) (string, erro
 		CreatedAt: time.Now(),
 	})
 	if err != nil {
-		slog.Error("failed to save link", "error", err.Error())
 		return "", err
 	}
 
 	shortCode, err := s.hasher.Encode(id)
 	if err != nil {
-		slog.Error("failed to hash id", "error", err.Error())
 		return "", err
 	}
 
@@ -69,18 +64,15 @@ func (s *linkService) ShortenLink(ctx context.Context, url string) (string, erro
 func (s *linkService) Redirect(ctx context.Context, shortCode string) (string, error) {
 	id, err := s.hasher.Decode(shortCode)
 	if err != nil {
-		slog.Error("failed to decode short code", "error", err.Error())
 		return "", err
 	}
 
 	url, err := s.linkRepository.GetByID(ctx, id)
 	if err != nil && !errors.Is(err, repository.ErrLinkNotFound) {
-		slog.Error("failed to get url", "error", err.Error())
 		return "", err
 	}
 
 	if errors.Is(err, repository.ErrLinkNotFound) {
-		slog.Warn("Url not found")
 		return url, err
 	}
 
