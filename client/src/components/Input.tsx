@@ -3,7 +3,7 @@ export default function () {
         <input
             type="text"
             placeholder="Insira seu Link aqui"
-            className="w-4/5 bg-background rounded-lg py-2 px-4"
+            className="w-4/5 bg-background rounded-lg py-2 border-2 border-neutral outline-none px-4 transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary"
         />
     );
 }

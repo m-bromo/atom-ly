@@ -5,19 +5,19 @@ export default function () {
     return (
         <div className="flex flex-row justify-between w-full">
             <Card
-                icon={<Shield />}
+                Icon={Shield}
                 title="Confiável"
                 text="Url's curtas com nosso sistema otimizado"
             />
 
             <Card
-                icon={<Sparkle />}
+                Icon={Sparkle}
                 title="Simples"
                 text="Interface simples focadas no que mais importa"
             />
 
             <Card
-                icon={<Zap />}
+                Icon={Zap}
                 title="Rápido"
                 text="Seus links funcionam perfeitamente sempre"
             />
