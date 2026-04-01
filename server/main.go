@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/m-bromo/atom-ly/config"
 	"github.com/m-bromo/atom-ly/internal/database/postgres"
@@ -31,6 +33,17 @@ func main() {
 	}
 
 	c := gin.Default()
+
+	c.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodDelete,
+		},
+		AllowHeaders: []string{"Origin", "Content-type"},
+	}))
 
 	querier := sqlc.New(db)
 	hasher := hasher.NewHashID(config)
